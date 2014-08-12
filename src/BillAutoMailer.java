@@ -38,7 +38,7 @@ public class BillAutoMailer
 		
 		readInfo();
 		
-		InfoManagementFrame frame = new InfoManagementFrame(billList, contactList, templateList);
+		NavigationFrame frame = new NavigationFrame(billList, contactList, templateList);
 
 		frame.setVisible(true);
 	}

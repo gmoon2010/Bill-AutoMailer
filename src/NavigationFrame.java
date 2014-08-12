@@ -8,7 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
-public class InfoManagementFrame extends JFrame
+public class NavigationFrame extends JFrame
 {
 	private JButton sendEmailButton, manageBillsButton, manageContactsButton, manageTemplatesButton;
 	private JPanel mainPanel;
@@ -16,7 +16,7 @@ public class InfoManagementFrame extends JFrame
 	private ArrayList<Contact> contactList;
 	private ArrayList<Template> templateList;
 	
-	public InfoManagementFrame(ArrayList<Bill> billList, ArrayList<Contact> contactList, ArrayList<Template> templateList)
+	public NavigationFrame(ArrayList<Bill> billList, ArrayList<Contact> contactList, ArrayList<Template> templateList)
 	{
 		this.billList = billList;
 		this.contactList = contactList;

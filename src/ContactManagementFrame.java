@@ -11,6 +11,9 @@ public class ContactManagementFrame extends JFrame
 	{
 		this.contactList = contactList;
 		
+		
+		setSize(500, 500);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Contact Management");
 	}
 }
