@@ -38,8 +38,7 @@ public class BillAutoMailer
 		
 		readInfo();
 		
-		InfoManagementFrame frame = new InfoManagementFrame(billList, contactList, templateList);
-
+		NavigationFrame frame = new NavigationFrame(billList, contactList, templateList);
 		frame.setVisible(true);
 	}
 
@@ -50,6 +49,7 @@ public class BillAutoMailer
 
 		if(inFile.exists())
 		{
+			System.out.println("inFile exists");
 			ObjectInputStream inStream = new ObjectInputStream(new FileInputStream(inFile));
 
 			billList = (ArrayList<Bill>) inStream.readObject();
@@ -59,10 +59,7 @@ public class BillAutoMailer
 			inStream.close();
 		}
 		else
-		{
-			inFile.createNewFile();
-		}
-		
+			inFile.createNewFile();	
 	}
 
 	private static void writeInfo() throws IOException
@@ -71,6 +68,7 @@ public class BillAutoMailer
 
 		if(outFile.exists())
 		{
+			System.out.println("outFile exists");
 			ObjectOutputStream outStream = new ObjectOutputStream(new FileOutputStream(outFile));
 			
 			outStream.writeObject(billList);
@@ -80,8 +78,6 @@ public class BillAutoMailer
 			outStream.close();
 		}
 		else
-		{
 			outFile.createNewFile();
-		}
 	}
 }	//	end Main

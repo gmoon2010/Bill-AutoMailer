@@ -11,20 +11,26 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 public class BillManagementFrame extends JFrame
 {
-	private JButton addBillButton, removeBillButton, editBillButton;
-	private JList<Bill> billDisplay;
+	private JButton addButton, removeButton, editButton;
+	private JList<Bill> listDisplay;
 	private ArrayList<Bill> billList;
 	private JPanel mainPanel, topPanel, bottomPanel;
+	private JScrollPane listScrollPane;
 
 	public BillManagementFrame(ArrayList<Bill> billList)
 	{
 		this.billList = billList;
+		initComponents();
+	}
 
+	private void initComponents()
+	{
 		ButtonListener bListener = new ButtonListener();
 
 		topPanel = new JPanel();
@@ -35,82 +41,86 @@ public class BillManagementFrame extends JFrame
 		mainPanel.add(topPanel);
 		mainPanel.add(bottomPanel);
 
-		removeBillButton = new JButton("-");
-		removeBillButton.addActionListener(bListener);
+		removeButton = new JButton("-");
+		removeButton.addActionListener(bListener);
 
-		addBillButton = new JButton("+");
-		addBillButton.addActionListener(bListener);
-		
-		editBillButton = new JButton("Edit");
-		editBillButton.addActionListener(bListener);
+		addButton = new JButton("+");
+		addButton.addActionListener(bListener);
 
-		billDisplay = new JList<Bill>();
-		billDisplay.setBackground(Color.white);
-		billDisplay.setPreferredSize(new Dimension(250, 250));
-		updateBillDisplay();
+		editButton = new JButton("Edit");
+		editButton.addActionListener(bListener);
+
+		listDisplay = new JList<Bill>();
+		listDisplay.setBackground(Color.white);
+		listDisplay.setPreferredSize(new Dimension(250, 250));
+		listDisplay.setAutoscrolls(true);
+		updateListDisplay();
+
+		topPanel.add(addButton);
+		topPanel.add(removeButton);
+		topPanel.add(editButton);
 		
-		topPanel.add(addBillButton);
-		topPanel.add(removeBillButton);
-		topPanel.add(editBillButton);
-		bottomPanel.add(billDisplay);
+		listScrollPane = new JScrollPane();
+		listScrollPane.setViewportView(listDisplay);
+		bottomPanel.add(listScrollPane);
 
 		add(mainPanel);
-		
+
 		setTitle("Bill Management");
 		setSize(500, 500);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 
-	private void addBill()
+	private void addItem()
 	{
-		AddBillFrame frame = new AddBillFrame();
+		AddItemFrame frame = new AddItemFrame();
 		frame.setVisible(true);
 	}
 
-	private void removeBill()
+	private void removeItem()
 	{
-		if(billDisplay.getSelectedValue() != null)
+		if(listDisplay.getSelectedValue() != null)
 		{
-			Bill billToRemove = billDisplay.getSelectedValue();
+			Bill billToRemove = listDisplay.getSelectedValue();
 			billList.remove(billToRemove);
-			updateBillDisplay();
+			updateListDisplay();
 		}
 	}
 
-	private void updateBillDisplay()
+	private void updateListDisplay()
 	{	
 		Bill[] billData = new Bill[billList.size()];
 
 		for(int i = 0; i < billList.size(); i++)
 			billData[i] = billList.get(i);
-		
-		billDisplay.setListData(billData);
-		
+
+		listDisplay.setListData(billData);
+
 		if(billList.size() > 0)
-			billDisplay.setSelectedIndex(0);
+			listDisplay.setSelectedIndex(0);
 	}
-	
-	private void updateBillDisplay(Bill b)
+
+	private void updateListDisplay(Bill b)
 	{	
 		Bill[] billData = new Bill[billList.size()];
 
 		for(int i = 0; i < billList.size(); i++)
 			billData[i] = billList.get(i);
 
-		billDisplay.setListData(billData);
-		billDisplay.setSelectedValue(b, true);
+		listDisplay.setListData(billData);
+		listDisplay.setSelectedValue(b, true);
 	}
 
-	private void editBill()
+	private void editItem()
 	{
-		if(billDisplay.getSelectedValue() != null)
+		if(listDisplay.getSelectedValue() != null)
 		{
-			Bill billToEdit = billDisplay.getSelectedValue();
-			AddBillFrame frame = new AddBillFrame(billToEdit);
+			Bill billToEdit = listDisplay.getSelectedValue();
+			AddItemFrame frame = new AddItemFrame(billToEdit);
 			frame.setVisible(true);
 		}
 	}
-	
+
 	private class ButtonListener implements ActionListener
 	{
 		public void actionPerformed(ActionEvent e) 
@@ -119,36 +129,36 @@ public class BillManagementFrame extends JFrame
 			String buttonText = source.getText();
 
 			if(buttonText.equals("+"))
-				addBill();
+				addItem();
 			else if (buttonText.equals("-"))
-				removeBill();
+				removeItem();
 			else if(buttonText.equals("Edit"))
-				editBill();
+				editItem();
 		}
 	}	//end ButtonListener
 
-	private class AddBillFrame extends JFrame
+	private class AddItemFrame extends JFrame
 	{
-		JPanel addBillMainPanel, topPanel, topLPanel, topRPanel, bottomPanel;
-		JButton addBillButton, cancelButton;
+		JPanel mainPanel, topPanel, topLPanel, topRPanel, bottomPanel;
+		JButton addButton, cancelButton;
 		JTextField nameField, totalAmtField, splitNumField;
 		JLabel nameLabel, totalAmtLabel, splitNumLabel;
 
-		public AddBillFrame()
+		public AddItemFrame()
 		{	
 			initComponents();
 		}
-		
-		public AddBillFrame(Bill b)
+
+		public AddItemFrame(Bill b)
 		{
 			String name = b.getName();
 			int splitNum = b.getSplitNum();
 			double totalAmt = b.getTotalAmt();
-			
+
 			billList.remove(b);
-			
+
 			initComponents();
-			
+
 			nameField.setText(name);
 			splitNumField.setText(Integer.toString(splitNum));
 			totalAmtField.setText(Double.toString(totalAmt));	
@@ -156,44 +166,44 @@ public class BillManagementFrame extends JFrame
 
 		private void initComponents()
 		{
-			AddBillButtonListener aBBListener = new AddBillButtonListener(this);
+			addButtonListener aBBListener = new addButtonListener(this);
 
 			topLPanel = new JPanel();
 			topLPanel.setLayout(new GridLayout(3, 1));
-			
+
 			topRPanel = new JPanel();
 			topRPanel.setLayout(new GridLayout(3, 1));
-			
+
 			topPanel = new JPanel();
 			topPanel.setLayout(new GridLayout(1, 2));	
 			topPanel.add(topLPanel);
 			topPanel.add(topRPanel);
-			
+
 			bottomPanel = new JPanel();
-			
-			addBillMainPanel = new JPanel();
-			addBillMainPanel.setLayout(new GridLayout(2, 1));
-			addBillMainPanel.add(topPanel);
-			addBillMainPanel.add(bottomPanel);
-			
-			addBillButton = new JButton("Add Bill");
-			addBillButton.addActionListener(aBBListener);
+
+			mainPanel = new JPanel();
+			mainPanel.setLayout(new GridLayout(2, 1));
+			mainPanel.add(topPanel);
+			mainPanel.add(bottomPanel);
+
+			addButton = new JButton("Add Bill");
+			addButton.addActionListener(aBBListener);
 
 			cancelButton = new JButton("Cancel");
 			cancelButton.addActionListener(aBBListener);
 
 			nameField = new JTextField();
 			nameField.setPreferredSize(new Dimension(20, 40));
-			
+
 			totalAmtField = new JTextField();
 			splitNumField = new JTextField();
 
 			nameLabel = new JLabel("Name:");
-			
+
 			totalAmtLabel = new JLabel("Total Amount:");
-			
+
 			splitNumLabel = new JLabel("Number of People to Split Bill:");
-			
+
 			nameLabel.setLabelFor(nameField);
 			totalAmtLabel.setLabelFor(totalAmtField);
 			splitNumLabel.setLabelFor(splitNumField);
@@ -204,10 +214,10 @@ public class BillManagementFrame extends JFrame
 			topRPanel.add(totalAmtField);
 			topLPanel.add(splitNumLabel);
 			topRPanel.add(splitNumField);
-			bottomPanel.add(addBillButton);
+			bottomPanel.add(addButton);
 			bottomPanel.add(cancelButton);
 
-			add(addBillMainPanel);
+			add(mainPanel);
 
 			setTitle("Bill Information");
 			setSize(500, 500);
@@ -215,11 +225,11 @@ public class BillManagementFrame extends JFrame
 			setVisible(true);
 		}
 
-		private class AddBillButtonListener implements ActionListener
+		private class addButtonListener implements ActionListener
 		{
-			private AddBillFrame openFrame;
+			private AddItemFrame openFrame;
 
-			public AddBillButtonListener(AddBillFrame openFrame)
+			public addButtonListener(AddItemFrame openFrame)
 			{
 				this.openFrame = openFrame;
 			}
@@ -235,9 +245,9 @@ public class BillManagementFrame extends JFrame
 					String billName = nameField.getText();
 					String splitNum = splitNumField.getText();
 					String totalAmt = totalAmtField.getText();
-					
+
 					double totalAmtDouble = 0;
-					
+
 					if(!isDouble(totalAmt))
 					{
 						if(totalAmt.charAt(0) == '$')
@@ -257,27 +267,26 @@ public class BillManagementFrame extends JFrame
 						if(Integer.parseInt(splitNum) < 1)
 							splitNumBool = false;
 					}
-							
+
 					if(nameExists(billName))
 						billNameBool = false;
-					
+
 					if(!billNameBool)
 						nameField.setBackground(Color.red);
-					
+
 					if(!splitNumBool)
 						splitNumField.setBackground(Color.red);
-					
+
 					if(!totalAmtBool)
 						totalAmtField.setBackground(Color.red);
-	
+
 					if(billNameBool && splitNumBool && totalAmtBool)
 					{
 						Bill billToAdd = new Bill(billName, Integer.parseInt(splitNum), totalAmtDouble);
 						billList.add(billToAdd);
 						Collections.sort(billList);
-						updateBillDisplay();
 						openFrame.dispose();
-						updateBillDisplay(billToAdd);
+						updateListDisplay(billToAdd);
 					}
 
 				}
@@ -286,7 +295,7 @@ public class BillManagementFrame extends JFrame
 					openFrame.dispose();
 				}
 			}
-			
+
 			private boolean nameExists(String s)
 			{
 				for(int i = 0; i < billList.size(); i++)
@@ -294,10 +303,10 @@ public class BillManagementFrame extends JFrame
 					if(s.equals(billList.get(i).toString()))
 						return true;
 				}
-				
+
 				return false;
 			}
-			
+
 			private boolean isDouble(String s)
 			{
 				try {
@@ -321,6 +330,6 @@ public class BillManagementFrame extends JFrame
 					return false;
 				}
 			}
-		}	//end AddBillButtonListener
-	}	//end AddBillFrame
+		}	//end addButtonListener
+	}	//end AddItemFrame
 }	//end BillManagementFrame
