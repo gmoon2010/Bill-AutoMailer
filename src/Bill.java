@@ -7,14 +7,20 @@ public class Bill implements Comparable<Bill>, Serializable
 	 */
 	private static final long serialVersionUID = 5503917638723324858L;
 	private String name;
-	private int splitNum;
 	private double totalAmt;
 	
-	public Bill(String name, int splitNum, double totalAmt)
+	public Bill(String name, double totalAmt)
 	{
 		this.name = name;
-		this.splitNum = splitNum;
 		this.totalAmt = totalAmt;
+	}
+	
+	public double getSplitAmount(double splitNum)
+	{
+		if(splitNum > 0)
+			return Math.round(totalAmt/splitNum * 100.0) / 100.0;
+		else 
+			return Math.round(totalAmt * 100.0) / 100.0;
 	}
 	
 	public String toString()
@@ -25,11 +31,6 @@ public class Bill implements Comparable<Bill>, Serializable
 	public String getName()
 	{
 		return name;
-	}
-	
-	public int getSplitNum()
-	{
-		return splitNum;
 	}
 	
 	public double getTotalAmt()

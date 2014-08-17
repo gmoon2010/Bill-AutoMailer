@@ -53,7 +53,6 @@ public class BillManagementFrame extends JFrame
 		listDisplay = new JList<Bill>();
 		listDisplay.setBackground(Color.white);
 		listDisplay.setPreferredSize(new Dimension(250, 250));
-		listDisplay.setAutoscrolls(true);
 		updateListDisplay();
 
 		topPanel.add(addButton);
@@ -141,8 +140,8 @@ public class BillManagementFrame extends JFrame
 	{
 		JPanel mainPanel, topPanel, topLPanel, topRPanel, bottomPanel;
 		JButton addButton, cancelButton;
-		JTextField nameField, totalAmtField, splitNumField;
-		JLabel nameLabel, totalAmtLabel, splitNumLabel;
+		JTextField nameField, totalAmtField;
+		JLabel nameLabel, totalAmtLabel;
 
 		public AddItemFrame()
 		{	
@@ -152,7 +151,6 @@ public class BillManagementFrame extends JFrame
 		public AddItemFrame(Bill b)
 		{
 			String name = b.getName();
-			int splitNum = b.getSplitNum();
 			double totalAmt = b.getTotalAmt();
 
 			billList.remove(b);
@@ -160,7 +158,6 @@ public class BillManagementFrame extends JFrame
 			initComponents();
 
 			nameField.setText(name);
-			splitNumField.setText(Integer.toString(splitNum));
 			totalAmtField.setText(Double.toString(totalAmt));	
 		}
 
@@ -169,10 +166,10 @@ public class BillManagementFrame extends JFrame
 			addButtonListener aBBListener = new addButtonListener(this);
 
 			topLPanel = new JPanel();
-			topLPanel.setLayout(new GridLayout(3, 1));
+			topLPanel.setLayout(new GridLayout(2, 1));
 
 			topRPanel = new JPanel();
-			topRPanel.setLayout(new GridLayout(3, 1));
+			topRPanel.setLayout(new GridLayout(2, 1));
 
 			topPanel = new JPanel();
 			topPanel.setLayout(new GridLayout(1, 2));	
@@ -196,24 +193,18 @@ public class BillManagementFrame extends JFrame
 			nameField.setPreferredSize(new Dimension(20, 40));
 
 			totalAmtField = new JTextField();
-			splitNumField = new JTextField();
 
 			nameLabel = new JLabel("Name:");
 
 			totalAmtLabel = new JLabel("Total Amount:");
 
-			splitNumLabel = new JLabel("Number of People to Split Bill:");
-
 			nameLabel.setLabelFor(nameField);
 			totalAmtLabel.setLabelFor(totalAmtField);
-			splitNumLabel.setLabelFor(splitNumField);
 
 			topLPanel.add(nameLabel);
 			topRPanel.add(nameField);
 			topLPanel.add(totalAmtLabel);
 			topRPanel.add(totalAmtField);
-			topLPanel.add(splitNumLabel);
-			topRPanel.add(splitNumField);
 			bottomPanel.add(addButton);
 			bottomPanel.add(cancelButton);
 
@@ -236,14 +227,13 @@ public class BillManagementFrame extends JFrame
 
 			public void actionPerformed(ActionEvent e) 
 			{
-				boolean billNameBool = true, splitNumBool = true, totalAmtBool = true;
+				boolean billNameBool = true, totalAmtBool = true;
 				JButton source = (JButton) e.getSource();
 				String buttonText = source.getText();
 
 				if(buttonText.equals("Add Bill"))
 				{					
 					String billName = nameField.getText();
-					String splitNum = splitNumField.getText();
 					String totalAmt = totalAmtField.getText();
 
 					double totalAmtDouble = 0;
@@ -260,29 +250,18 @@ public class BillManagementFrame extends JFrame
 						totalAmtDouble= Math.round(100*Double.parseDouble(totalAmt))/((double)100);
 					}
 
-					if(!isInteger(splitNum))
-						splitNumBool = false;
-					else
-					{
-						if(Integer.parseInt(splitNum) < 1)
-							splitNumBool = false;
-					}
-
 					if(nameExists(billName))
 						billNameBool = false;
 
 					if(!billNameBool)
 						nameField.setBackground(Color.red);
 
-					if(!splitNumBool)
-						splitNumField.setBackground(Color.red);
-
 					if(!totalAmtBool)
 						totalAmtField.setBackground(Color.red);
 
-					if(billNameBool && splitNumBool && totalAmtBool)
+					if(billNameBool && totalAmtBool)
 					{
-						Bill billToAdd = new Bill(billName, Integer.parseInt(splitNum), totalAmtDouble);
+						Bill billToAdd = new Bill(billName, totalAmtDouble);
 						billList.add(billToAdd);
 						Collections.sort(billList);
 						openFrame.dispose();
@@ -311,18 +290,6 @@ public class BillManagementFrame extends JFrame
 			{
 				try {
 					Double.parseDouble(s);
-					return true;
-				}
-				catch(NumberFormatException e)
-				{
-					return false;
-				}
-			}
-
-			private boolean isInteger(String s)
-			{
-				try {
-					Integer.parseInt(s);
 					return true;
 				}
 				catch(NumberFormatException e)

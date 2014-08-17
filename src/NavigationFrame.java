@@ -70,7 +70,7 @@ public class NavigationFrame extends JFrame
 			}
 			else if(buttonText.equals("Manage Templates"))
 			{
-				TemplateManagementFrame frame = new TemplateManagementFrame(templateList);
+				TemplateManagementFrame frame = new TemplateManagementFrame(templateList, billList, contactList);
 				frame.setVisible(true);
 			}
 		}		

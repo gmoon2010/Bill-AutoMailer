@@ -11,10 +11,11 @@ public class Template implements Comparable<Template>, Serializable
 	private static final long serialVersionUID = -6802216367909926446L;
 	private ArrayList<Bill> billList;
 	private ArrayList<Contact> contactList;
-	private String templateName;
+	private String templateName, preview;
 	
-	public Template(String name, ArrayList<Bill> billList, ArrayList<Contact> contactList)
+	public Template(String name, String preview, ArrayList<Bill> billList, ArrayList<Contact> contactList)
 	{
+		this.preview = preview;
 		this.templateName = name;
 		this.billList = billList;
 		this.contactList = contactList;
@@ -64,10 +65,20 @@ public class Template implements Comparable<Template>, Serializable
 		Collections.sort(billList);
 	}
 	
+	public String toString()
+	{
+		return templateName;
+	}
+	
+	public String getPreview()
+	{
+		return preview;
+	}
+	
 	@Override
 	public int compareTo(Template o) 
 	{
-		return 0;
+		return templateName.compareTo(o.getName());
 	}
 
 }

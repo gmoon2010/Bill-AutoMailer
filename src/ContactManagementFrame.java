@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
@@ -20,6 +21,7 @@ public class ContactManagementFrame extends JFrame
 	private JPanel topPanel, mainPanel, bottomPanel;
 	private JButton addButton, removeButton, editButton;
 	private JList<Contact> listDisplay;
+	private JScrollPane contactPane;
 
 	public ContactManagementFrame(ArrayList<Contact> contactList)
 	{
@@ -51,12 +53,16 @@ public class ContactManagementFrame extends JFrame
 		listDisplay = new JList<Contact>();
 		listDisplay.setBackground(Color.white);
 		listDisplay.setPreferredSize(new Dimension(250, 250));
+		
 		updateListDisplay();
-
+		
+		contactPane = new JScrollPane();
+		contactPane.setViewportView(listDisplay);
+		
 		topPanel.add(addButton);
 		topPanel.add(removeButton);
 		topPanel.add(editButton);
-		bottomPanel.add(listDisplay);
+		bottomPanel.add(contactPane);
 
 		add(mainPanel);
 
@@ -83,12 +89,12 @@ public class ContactManagementFrame extends JFrame
 
 	private void updateListDisplay()
 	{	
-		Contact[] billData = new Contact[contactList.size()];
+		Contact[] contactData = new Contact[contactList.size()];
 
 		for(int i = 0; i < contactList.size(); i++)
-			billData[i] = contactList.get(i);
+			contactData[i] = contactList.get(i);
 
-		listDisplay.setListData(billData);
+		listDisplay.setListData(contactData);
 
 		if(contactList.size() > 0)
 			listDisplay.setSelectedIndex(0);
