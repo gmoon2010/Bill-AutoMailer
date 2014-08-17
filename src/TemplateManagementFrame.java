@@ -1,7 +1,11 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -15,18 +19,20 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 @SuppressWarnings("serial")
 public class TemplateManagementFrame extends JFrame
 {
 	private JTextArea previewArea;
-	private JScrollPane templatePane;
+	private JScrollPane templatePane, previewPane;
 	private ArrayList<Template> templateList;
 	private ArrayList<Bill> billList;
 	private ArrayList<Contact> contactList;
 	private JList<Template> templateJList;
 	private JPanel mainPanel, topPanel, bottomPanel, bottomLPanel, bottomRPanel;
-	private JButton addButton, removeButton, editButton, previewButton;
+	private JButton addButton, removeButton, editButton;
 	
 	public TemplateManagementFrame(ArrayList<Template> templateList, ArrayList<Bill> billList,ArrayList<Contact> contactList)
 	{
@@ -42,11 +48,13 @@ public class TemplateManagementFrame extends JFrame
 		ButtonListener bListener = new ButtonListener();
 		
 		templateJList = new JList<Template>();
-		
+		templateJList.addListSelectionListener(new ListListener());
+
 		previewArea = new JTextArea();
+		previewArea.setEditable(false);
 		
-		previewButton = new JButton("View Preview");
-		previewButton.addActionListener(bListener);
+		previewPane = new JScrollPane();
+		previewPane.setViewportView(previewArea);
 		
 		addButton = new JButton("+");
 		addButton.addActionListener(bListener);
@@ -61,6 +69,7 @@ public class TemplateManagementFrame extends JFrame
 		
 		templatePane = new JScrollPane();
 		templatePane.setViewportView(templateJList);
+		templatePane.setPreferredSize(new Dimension(250, 250));
 		
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new GridLayout(2, 1));
@@ -69,7 +78,6 @@ public class TemplateManagementFrame extends JFrame
 		topPanel.add(addButton);
 		topPanel.add(removeButton);
 		topPanel.add(editButton);
-		topPanel.add(previewButton);
 		
 		bottomPanel = new JPanel();
 		bottomPanel.setLayout(new GridLayout(1, 2));
@@ -78,8 +86,8 @@ public class TemplateManagementFrame extends JFrame
 		bottomLPanel.add(templatePane);
 		
 		bottomRPanel = new JPanel();
-		previewArea.setText("Hello");
-		bottomRPanel.add(previewArea);
+		bottomRPanel.setLayout(new BorderLayout());
+		bottomRPanel.add(previewPane, BorderLayout.CENTER);
 		
 		bottomPanel.add(bottomLPanel);
 		bottomPanel.add(bottomRPanel);
@@ -87,10 +95,22 @@ public class TemplateManagementFrame extends JFrame
 		mainPanel.add(topPanel);
 		mainPanel.add(bottomPanel);
 		
+		if(templateList.size() > 0)
+			templateJList.setSelectedIndex(0);
+		
+		if(templateJList.getSelectedValue() != null)
+			previewArea.setText(templateJList.getSelectedValue().getPreview());
+		
 		add(mainPanel);
 		setSize(500, 500);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Template Management");
+	}
+	
+	private void removeTemplate()
+	{
+		templateList.remove(templateJList.getSelectedValue());
+		updateTemplateList();
 	}
 	
 	private void updateTemplateList()
@@ -101,6 +121,17 @@ public class TemplateManagementFrame extends JFrame
 			tempArr[i] = templateList.get(i);
 		
 		templateJList.setListData(tempArr);
+	}
+	
+	private class ListListener implements ListSelectionListener
+	{
+
+		@Override
+		public void valueChanged(ListSelectionEvent e) 
+		{
+			previewArea.setText(templateJList.getSelectedValue().getPreview());
+		}
+		
 	}
 	
 	private class ButtonListener implements ActionListener
@@ -116,12 +147,11 @@ public class TemplateManagementFrame extends JFrame
 				frame.setVisible(true);
 			}
 			else if(buttonText.equals("-"))
-			{
-			
-			}
+				removeTemplate();
 			else if(buttonText.equals("Edit"))
 			{
-				
+				AddTemplateFrame frame = new AddTemplateFrame(templateJList.getSelectedValue());
+				frame.setVisible(true);
 			}
 		}
 	}	//end ButtonListener
@@ -138,6 +168,19 @@ public class TemplateManagementFrame extends JFrame
 		private JComboBox<Bill> billComboBox;
 		private JButton addTemplateButton, cancelButton, addBillButton, addContactButton, removeBillButton, removeContactButton;
 		
+		public AddTemplateFrame(Template temp)
+		{
+			preview = temp.getPreview();
+			tempName = temp.getName();
+			templateCList = temp.getContactList();
+			templateBList = temp.getBillList();
+			
+			initComponents();
+			
+			nameField.setText(tempName);
+			previewArea.setText(preview);
+		}
+		
 		public AddTemplateFrame()
 		{
 			preview = "";
@@ -151,8 +194,11 @@ public class TemplateManagementFrame extends JFrame
 		{
 			AddTemplateButtonListener aTBListener = new AddTemplateButtonListener(this);
 			
+			previewPane = new JScrollPane();
+			
 			addTemplateButton = new JButton("Add Template");
 			addTemplateButton.setName("addTemplateButton");
+			addTemplateButton.addActionListener(aTBListener);
 			
 			cancelButton = new JButton("Cancel");
 			cancelButton.setName("cancelButton");
@@ -186,7 +232,9 @@ public class TemplateManagementFrame extends JFrame
 			
 			nameLabel = new JLabel("Template Name:");
 			nameLabel.setLabelFor(nameField);
+
 			nameField = new JTextField();
+			nameField.setColumns(20);
 			
 			mainPanel = new JPanel();
 			mainPanel.setLayout(new GridLayout(4, 1));
@@ -249,9 +297,6 @@ public class TemplateManagementFrame extends JFrame
 			
 			public AddTemplateButtonListener(AddTemplateFrame openFrame)
 			{
-				this.greeting = null;
-				this.body = null;
-				this.closing = null;
 				this.openFrame = openFrame;
 			}
 			
@@ -300,17 +345,18 @@ public class TemplateManagementFrame extends JFrame
 			
 			private String updateBody()
 			{
+				Collections.sort(templateBList);
 				body = "The following are the bills that each person"
-						+ "needs to pay;\n\n";
+						+ " needs to pay;\n\n";
 				
 				for(int i = 0; i < templateBList.size(); i++)
 				{
 					Bill bill = templateBList.get(i);
 					
-					if(i != templateBList.size())
-						body += (i+1) + ".\t" + bill.getName() + ":\t" + bill.getSplitAmount(templateCList.size()) + "\n";
+					if(i != templateBList.size() - 1)
+						body += (i+1) + ".\t" + bill.getName() + ":\t$" + bill.getSplitAmount(templateCList.size()) + "/person\n";
 					else
-						body += (i+1) + ".\t" + bill.getName() + ":\t" + bill.getSplitAmount(templateCList.size()) + "\n\n";
+						body += (i+1) + ".\t" + bill.getName() + ":\t$" + bill.getSplitAmount(templateCList.size()) + "/person\n\n";
 				}
 				
 				return body;
@@ -318,18 +364,27 @@ public class TemplateManagementFrame extends JFrame
 			
 			private String updateGreeting()
 			{
-				String name = null;
+				Collections.sort(templateCList);
 				greeting = "Hello ";
+				
+				String name = null;
 				
 				for(int i = 0; i < templateCList.size(); i++)
 				{
 					name = templateCList.get(i).getName();
 					
 					if(i == templateCList.size() - 1)
-						greeting += "and " + name + ",\n\n";
+					{
+						if(templateCList.size() > 1)
+							greeting += "and " + name;
+						else
+							greeting += name;
+					}
 					else
 						greeting += name + ", ";
 				}
+				
+				greeting += ",\n\n";
 				
 				return greeting;
 			}
@@ -343,7 +398,7 @@ public class TemplateManagementFrame extends JFrame
 			
 			private void updatePreview()
 			{
-				preview = null;
+				preview = "";
 				
 				preview += updateGreeting();
 				preview += updateBody();
@@ -357,11 +412,13 @@ public class TemplateManagementFrame extends JFrame
 				tempName = nameField.getText();
 				
 				if(tempName != null)
+				{
 					templateList.add(new Template(tempName, preview, templateBList, templateCList));
+					Collections.sort(templateList);
+					updateTemplateList();
+				}
 				else
 					nameField.setBackground(Color.red);
-				
-				Collections.sort(templateList);
 			}
 		}	//end AddTemplateButtonListener
 	}	//end AddTemplateFrame

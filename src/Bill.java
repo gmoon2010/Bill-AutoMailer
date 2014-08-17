@@ -17,7 +17,10 @@ public class Bill implements Comparable<Bill>, Serializable
 	
 	public double getSplitAmount(double splitNum)
 	{
-		return Math.round(100*(totalAmt/splitNum))/((double)100);
+		if(splitNum > 0)
+			return Math.round(totalAmt/splitNum * 100.0) / 100.0;
+		else 
+			return Math.round(totalAmt * 100.0) / 100.0;
 	}
 	
 	public String toString()

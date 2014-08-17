@@ -58,6 +58,7 @@ public class ContactManagementFrame extends JFrame
 		
 		contactPane = new JScrollPane();
 		contactPane.setViewportView(listDisplay);
+		
 		topPanel.add(addButton);
 		topPanel.add(removeButton);
 		topPanel.add(editButton);
@@ -88,12 +89,12 @@ public class ContactManagementFrame extends JFrame
 
 	private void updateListDisplay()
 	{	
-		Contact[] billData = new Contact[contactList.size()];
+		Contact[] contactData = new Contact[contactList.size()];
 
 		for(int i = 0; i < contactList.size(); i++)
-			billData[i] = contactList.get(i);
+			contactData[i] = contactList.get(i);
 
-		listDisplay.setListData(billData);
+		listDisplay.setListData(contactData);
 
 		if(contactList.size() > 0)
 			listDisplay.setSelectedIndex(0);
