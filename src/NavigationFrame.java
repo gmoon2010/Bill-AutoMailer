@@ -73,6 +73,11 @@ public class NavigationFrame extends JFrame
 				TemplateManagementFrame frame = new TemplateManagementFrame(templateList, billList, contactList);
 				frame.setVisible(true);
 			}
+			else if(buttonText.equals("Send Email"))
+			{
+				SendEmailFrame frame = new SendEmailFrame();
+				frame.setVisible(true);
+			}
 		}		
-	}
-}
+	}	//end ButtonListener
+}	//end NavigationFrame
